@@ -1,34 +1,50 @@
 import { useState } from "react";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./UserAuthContext";
 
 export default function Dashboard() {
-    const [username, setUsername] = useState("");
     const [joinRoomID, setJoinRoomID] = useState("");
     const [rooms, setRooms] = useState([]);
+    const { user } = useAuth();
 
     const handleCreate = () => {
+        if (!user) {
+            console.log(
+                "ERROR: Cannot call create room API cause user is undefined."
+            );
+            return;
+        }
+
         fetch("http://localhost:3000/api/rooms/create", {
             headers: {
                 "Content-Type": "application/json",
             },
             method: "POST",
             body: JSON.stringify({
-                userID: username,
+                userID: user.userID,
                 roomSettings: { maxPlayer: 2 },
             }),
         });
     };
 
     const handleGetRooms = () => {
-        fetch("http://localhost:3000/api/rooms/" + username)
+        if (!user) {
+            console.log(
+                "ERROR: Cannot call get rooms API cause user is undefined."
+            );
+            return;
+        }
+
+        console.log(user.userID);
+        fetch("http://localhost:3000/api/rooms/" + user.userID)
             .then((res) => res.json())
             .then((data) => setRooms(data));
     };
 
     let navigate = useNavigate();
 
-    const handleMoveToRoom = (roomID) => {
+    const handleMoveToRoom = (roomID: string) => {
         console.log(roomID);
         navigate("/gameroom", { state: { roomID: roomID } });
     };
@@ -40,10 +56,8 @@ export default function Dashboard() {
     return (
         <>
             <p>username</p>
-            <input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
+            {user?.username}
+            <hr />
             <br />
             <button onClick={handleCreate}>create new room</button>
             <br />
@@ -60,6 +74,7 @@ export default function Dashboard() {
                     </button>
                 ))}
             <br />
+            <hr />
             <input
                 value={joinRoomID}
                 onChange={(e) => setJoinRoomID(e.target.value)}
