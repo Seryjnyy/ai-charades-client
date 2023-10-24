@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GameState } from "./GameRoom";
-import { useAuth } from "./UserAuthContext";
+import { useAuth } from "../Auth/UserAuthContext";
 
 interface CharadesProps {
     gameState: GameState;
@@ -28,14 +28,14 @@ export default function Charades({
 
     return (
         <div>
-            <div>Charades</div>
-            {gameState.currentTurnID}
-            <br />
-            hello{"" + ourTurn}
-            <br />
-            {/* {!ourTurn ? <div> ourTurn </div> : ""}
-            {ourTurn && gameState.topics[gameState.topics.length - 1]} */}
-            {ourTurn ? <button onClick={submitPrompt}>next turn</button> : ""}
+            {ourTurn ? (
+                <button onClick={submitPrompt}>submit prompt</button>
+            ) : (
+                ""
+            )}
+            {gameState.imageURIs.map((uri, index) => (
+                <img key={"image" + index} src={uri} />
+            ))}
         </div>
     );
 }

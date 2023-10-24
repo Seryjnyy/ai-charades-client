@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
-import { useAuth } from "./UserAuthContext";
+import { useAuth } from "../Auth/UserAuthContext";
 import Charades from "./Charades";
 
 // taken from server
@@ -14,6 +14,7 @@ interface Metadata {
 export interface GameState {
     currentTurnID: string;
     topics: string[];
+    imageURIs: string[];
 }
 
 // TODO :
@@ -136,7 +137,9 @@ export default function GameRoom() {
 
                     <button onClick={handleLeave}>leave</button>
 
-                    <button onClick={handleStartGame}>start game</button>
+                    {socket && metadata && metadata.creator == user?.userID && (
+                        <button onClick={handleStartGame}>start game</button>
+                    )}
                 </>
             )}
 

@@ -1,14 +1,17 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Dashboard from "./Dashboard";
-import GameRoom from "./GameRoom";
-import { UserAuthContext } from "./UserAuthContext";
-import LandingPage from "./LandingPage";
-import RequireAuth from "./RequireAuth";
+import Dashboard from "./Dashboard/Dashboard";
+import GameRoom from "./Game/GameRoom";
+import { UserAuthContext } from "./Auth/UserAuthContext";
+import LandingPage from "./Landing/LandingPage";
+import RequireAuth from "./Auth/RequireAuth";
+import "./App.css";
+import NavBar from "./NavBar";
 
 function App() {
     return (
         <UserAuthContext>
             <BrowserRouter>
+                <NavBar />
                 <Routes>
                     <Route path={"/"} element={<LandingPage />}></Route>
                     <Route

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { createUserID } from "./utility/username";
+import { createUserID } from "../utility/username";
 
 interface AuthContextType {
     user: User | undefined;
