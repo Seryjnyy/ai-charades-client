@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useAuth } from "../Auth/UserAuthContext";
-import uuid from "react-uuid";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import uuid from "react-uuid";
+import { useAuth } from "../Auth/UserAuthContext";
 
 export default function LoginAndPlay() {
     const [username, setUsername] = useState<string>("");

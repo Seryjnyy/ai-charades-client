@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { GameState } from "./GameRoom";
-import { useAuth } from "../Auth/UserAuthContext";
+import { useAuth } from "../../Auth/UserAuthContext";
+import { GameState } from "../GameRoom";
 
 interface CharadesProps {
     gameState: GameState;

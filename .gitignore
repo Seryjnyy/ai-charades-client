@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# will contain bad words to filter out, don't want to upload them
+filter.json
+
 node_modules
 dist
 dist-ssr

@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "../Auth/UserAuthContext";
-import Charades from "./Charades";
+import Charades from "./Gameplay/Charades";
+import Prompting from "./Gameplay/Prompting";
+import Guessing from "./Gameplay/Guessing";
+import Results from "./Gameplay/Results";
 
 // taken from server
 interface Metadata {
@@ -11,10 +14,28 @@ interface Metadata {
     creator: string;
 }
 
-export interface GameState {
-    currentTurnID: string;
+export interface OurState {
     topics: string[];
-    imageURIs: string[];
+    prompts: string[];
+    imageURIsFromPrompts: string[];
+    topicPlace: 0;
+    promptPlace: 0;
+    imagesToGuess: string[];
+    guesses: string[];
+    guessPlace: number;
+}
+
+export interface GameState {
+    gameState: { round: string };
+    ourState: OurState;
+}
+
+export interface Result {
+    topic: string;
+    prompt: string;
+    guess: string;
+    imageURI: string;
+    originatorID: string; // userID
 }
 
 // TODO :
@@ -35,6 +56,7 @@ export default function GameRoom() {
     const [metadata, setMetadata] = useState<Metadata>();
     const [socket, setSocket] = useState<Socket>();
     const [gameState, setGameState] = useState<GameState>();
+    const [results, setResults] = useState<Result[]>();
 
     const { state } = useLocation();
     const { roomID } = state;
@@ -86,8 +108,17 @@ export default function GameRoom() {
         });
 
         _socket.on("game_state_update", (data) => {
+            console.log("GAME STATE  UPDATE");
             console.log(data);
             setGameState(data);
+        });
+
+        _socket.on("results", (data) => {
+            console.log(data);
+            setResults(data.results);
+
+            console.log("DISCONNECTING FROM SOCKET");
+            _socket.disconnect();
         });
     };
 
@@ -105,50 +136,85 @@ export default function GameRoom() {
         navigate("/dashboard");
     };
 
-    const handleSubmitPrompt = () => {
+    const handleSubmitPrompt = (prompt: string) => {
         if (socket == undefined) {
             return;
             // TODO : throw error, or something
         }
 
-        socket.emit("submit_prompt", "done");
+        // console.log(prompt);
+        // TODO : need to pass in the written prompt
+        // but need to check it first
+        socket.emit("submit_prompt", { prompt: prompt });
     };
 
-    return (
-        <>
-            {!gameState && (
-                <>
-                    <div>GameRoom for {roomID}</div>
-                    <h2>Users</h2>
-                    {users &&
-                        users.map((user, index) => (
-                            <div key={user + index}>{user}</div>
-                        ))}
-                    <h2>Settings</h2>
-                    {metadata && (
-                        <div>
-                            <div>{metadata.gameType}</div>
-                            <div>{metadata.maxPlayer}</div>
-                        </div>
-                    )}
-                    <button onClick={handleEnter} disabled={connected}>
-                        enter room
-                    </button>
+    const handleSubmitGuess = (guess: string) => {
+        if (socket == undefined) {
+            return;
+        }
 
-                    <button onClick={handleLeave}>leave</button>
+        socket.emit("submit_guess", { guess: guess });
+    };
 
-                    {socket && metadata && metadata.creator == user?.userID && (
-                        <button onClick={handleStartGame}>start game</button>
-                    )}
-                </>
-            )}
+    if (gameState == undefined) {
+        return (
+            <div>
+                <div>GameRoom for {roomID}</div>
 
-            {gameState && (
-                <Charades
-                    gameState={gameState}
-                    handleSubmitPrompt={handleSubmitPrompt}
-                />
-            )}
-        </>
-    );
+                <button onClick={handleEnter} disabled={connected}>
+                    enter room
+                </button>
+            </div>
+        );
+    }
+
+    // TODO : redundant gamestate.gamestate
+    if (gameState.gameState.round == "LOBBY") {
+        return (
+            <div>
+                <h2>Users</h2>
+                {users &&
+                    users.map((user, index) => (
+                        <div key={user + index}>{user}</div>
+                    ))}
+                <h2>Settings</h2>
+                {metadata && (
+                    <div>
+                        <div>{metadata.gameType}</div>
+                        <div>{metadata.maxPlayer}</div>
+                    </div>
+                )}
+
+                <button onClick={handleLeave}>leave</button>
+
+                {socket && metadata && metadata.creator == user?.userID && (
+                    <button onClick={handleStartGame}>start game</button>
+                )}
+            </div>
+        );
+    }
+
+    if (gameState.gameState.round == "PROMPTING") {
+        return (
+            <Prompting
+                ourState={gameState.ourState}
+                handleSubmitPrompt={handleSubmitPrompt}
+            />
+        );
+    }
+
+    if (gameState.gameState.round == "GUESSING") {
+        return (
+            <Guessing
+                ourState={gameState.ourState}
+                handleSubmitGuess={handleSubmitGuess}
+            />
+        );
+    }
+
+    if (gameState.gameState.round == "RESULTS") {
+        return <Results results={results} />;
+    }
+
+    return <div>Something is wrong :/</div>;
 }
