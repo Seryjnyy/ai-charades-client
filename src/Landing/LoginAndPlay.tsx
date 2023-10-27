@@ -2,15 +2,30 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import uuid from "react-uuid";
 import { useAuth } from "../Auth/UserAuthContext";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
+
+import Avatar, { genConfig } from "react-nice-avatar";
 
 export default function LoginAndPlay() {
     const [username, setUsername] = useState<string>("");
+    const [usernameError, setUsernameError] = useState("");
     const { user, register, logout } = useAuth();
 
     let navigate = useNavigate();
 
+    const config = genConfig("hi@dapi.to");
+
     const isUsernameValid = () => {
-        if (username == undefined) {
+        if (username == "") {
+            setUsernameError("Can't have a empty username.");
+            return false;
+        }
+
+        if (username.length > 20) {
+            setUsernameError(
+                "Can't have a username longer than 20 characters."
+            );
             return false;
         }
 
@@ -37,19 +52,47 @@ export default function LoginAndPlay() {
         logout();
     };
 
-    return (
-        <>
-            {!user && (
-                <input
+    if (!user) {
+        return (
+            <Box>
+                <Typography sx={{ pb: 1 }}>Enter a name</Typography>
+                <TextField
+                    // label="username"
+                    variant="outlined"
+                    error={usernameError != ""}
+                    helperText={usernameError}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
-            )}
-            {user?.username}
-            <br />#{user?.id}
-            <br />
-            <button onClick={handleStartGame}>Play as guest</button>
-            <button onClick={handleLogout}>Logout</button>
+
+                <Box sx={{ display: "flex", justifyContent: "end" }}>
+                    <Button onClick={handleStartGame} variant="outlined">
+                        Play as guest
+                    </Button>
+                </Box>
+            </Box>
+        );
+    }
+
+    return (
+        <>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Avatar style={{ width: "4rem", height: "4rem" }} {...config} />
+                <Typography sx={{ ml: 2 }}>{user?.username}</Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "end" }}>
+                <Button onClick={handleStartGame} variant="outlined">
+                    Play as guest
+                </Button>
+                <Button
+                    onClick={handleLogout}
+                    variant="outlined"
+                    sx={{ ml: 2 }}
+                >
+                    <LogoutIcon />
+                </Button>
+            </Box>
         </>
     );
 }

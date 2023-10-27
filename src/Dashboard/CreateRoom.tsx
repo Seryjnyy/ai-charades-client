@@ -1,3 +1,4 @@
+import { Box, Button, Typography } from "@mui/material";
 import { useAuth } from "../Auth/UserAuthContext";
 
 export default function CreateRoom() {
@@ -29,9 +30,17 @@ export default function CreateRoom() {
     };
 
     return (
-        <div>
-            <h2>Create room</h2>
-            <button onClick={handleCreate}>create new room</button>
-        </div>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+            }}
+        >
+            <Typography variant="h3">Create room</Typography>
+            <Button variant="outlined" onClick={handleCreate}>
+                create new room
+            </Button>
+        </Box>
     );
 }

@@ -120,6 +120,10 @@ export default function GameRoom() {
             console.log("DISCONNECTING FROM SOCKET");
             _socket.disconnect();
         });
+
+        _socket.on("connect_error", (err) => {
+            console.log(err.message); // undefined
+        });
     };
 
     const handleStartGame = () => {

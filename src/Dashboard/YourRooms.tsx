@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Auth/UserAuthContext";
+import { Box, Button, Typography } from "@mui/material";
 
 export default function YourRooms() {
     const [rooms, setRooms] = useState([]);
@@ -29,11 +30,18 @@ export default function YourRooms() {
     };
 
     return (
-        <div>
-            <h2>Your rooms</h2>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+            }}
+        >
+            <Typography variant="h3">Your rooms</Typography>
 
-            <button onClick={handleGetRooms}>get rooms</button>
-            <br />
+            <Button variant="outlined" onClick={handleGetRooms}>
+                get rooms
+            </Button>
             <h3>rooms</h3>
             {rooms &&
                 rooms.map((roomID) => (
@@ -44,6 +52,6 @@ export default function YourRooms() {
                         {roomID}
                     </button>
                 ))}
-        </div>
+        </Box>
     );
 }
