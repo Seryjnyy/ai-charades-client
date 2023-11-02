@@ -6,10 +6,21 @@ function RequireAuth({ children, redirectTo }) {
     const { user } = useAuth();
     const location = useLocation();
 
+    // HACK because of the strange behavior, where on refresh it thinks user is not authenticated
+    // and sends them back to landing page and we send the user back to where they were/
+    // we don't want the user to be sent back to the gameroom since the socket disconnects on refresh, so no point going back to that room
+
+    let path =
+        location.pathname == "/gameroom" ? "/dashboard" : location.pathname;
+
     return user ? (
         children
     ) : (
-        <Navigate to={redirectTo} state={{ path: location.pathname }} />
+        <Navigate
+            to={redirectTo}
+            state={{ path: path }}
+            // replace={true}
+        />
     );
 }
 

@@ -10,14 +10,11 @@ export default function Dashboard() {
     const { user } = useAuth();
 
     return (
-        <>
-            <Typography variant="h2" sx={{ ml: 2 }}>
-                Dashboard
-            </Typography>
+        <Box sx={{ mx: "auto", maxWidth: 400 }}>
             <Stack gap={4} sx={{ mx: 2 }}>
-                <Paper sx={{ py: 2 }}>
+                {/* <Paper sx={{ py: 2 }}>
                     <YourRooms />
-                </Paper>
+                </Paper> */}
                 <Paper sx={{ py: 2 }}>
                     <CreateRoom />
                 </Paper>
@@ -25,6 +22,6 @@ export default function Dashboard() {
                     <JoinRoom />
                 </Paper>
             </Stack>
-        </>
+        </Box>
     );
 }

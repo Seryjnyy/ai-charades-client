@@ -2,6 +2,7 @@ import {
     AppBar,
     Box,
     Container,
+    Divider,
     IconButton,
     Menu,
     MenuItem,
@@ -13,16 +14,22 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
 import ThemeModeSelector from "./theme/ThemeModeSwitch";
 import { useState } from "react";
+import { useAuth } from "./Auth/UserAuthContext";
+import Avatar, { genConfig } from "react-nice-avatar";
 
 export default function NavBar() {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
 
+    const { user } = useAuth();
+
+    const config = genConfig(user?.userAvatarSeed);
+
     const navigateTo = (destination: string) => {
         navigate("/" + destination);
     };
 
-    const settings = ["Home", "Dashboard"];
+    const settings = ["Home", "Dashboard", "About"];
 
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);
@@ -32,13 +39,18 @@ export default function NavBar() {
         setAnchorElUser(null);
     };
 
-    const handleNavigationButtonClick = (_setting) => {
+    // TODO : just do lower case setting and use in navigate
+    const handleNavigationButtonClick = (_setting: string) => {
         if (_setting == "Home") {
             navigate("/");
         }
 
         if (_setting == "Dashboard") {
             navigate("/dashboard");
+        }
+
+        if (_setting == "About") {
+            navigate("/about");
         }
     };
 
@@ -79,6 +91,28 @@ export default function NavBar() {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                pb: 1,
+                            }}
+                        >
+                            <Box sx={{ ml: 0.5, mr: 1 }}>
+                                <Avatar
+                                    style={{ width: "2rem", height: "2rem" }}
+                                    {...config}
+                                />
+                            </Box>
+                            <Box sx={{ maxWidth: 90 }}>
+                                <Typography noWrap>
+                                    {user && user.username}
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <Divider />
+
                         {settings.map((setting) => (
                             <MenuItem
                                 key={setting}
@@ -91,7 +125,7 @@ export default function NavBar() {
                                 </Typography>
                             </MenuItem>
                         ))}
-                        <Box
+                        {/* <Box
                             sx={{
                                 width: "100%",
                                 display: "flex",
@@ -99,7 +133,7 @@ export default function NavBar() {
                             }}
                         >
                             <ThemeModeSelector />
-                        </Box>
+                        </Box> */}
                     </Menu>
                 </Box>
             </Container>

@@ -1,8 +1,13 @@
 import { Box, Button, Typography } from "@mui/material";
 import { useAuth } from "../Auth/UserAuthContext";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function CreateRoom() {
+    const [apiCalled, setApiCalled] = useState(false);
     const { user } = useAuth();
+
+    const navigate = useNavigate();
 
     const handleCreate = () => {
         if (!user) {
@@ -12,8 +17,8 @@ export default function CreateRoom() {
             return;
         }
 
-        // TODO : need to allow the user to choose the settings
-        // TODO : need to ask the server what topics are available
+        setApiCalled(true);
+
         fetch("http://localhost:3000/api/rooms/create", {
             headers: {
                 "Content-Type": "application/json",
@@ -21,12 +26,24 @@ export default function CreateRoom() {
             method: "POST",
             body: JSON.stringify({
                 userID: user.userID,
-                roomSettings: {
-                    maxPlayer: 2,
-                    selectedTopics: ["cartoons", "shows"],
-                },
             }),
-        });
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error("Failed to create room.");
+                }
+
+                return res.json();
+            })
+            .then((data) => {
+                console.log(data);
+                navigate("/gameroom", { state: { roomID: data.roomID } });
+            })
+            .catch((err) => {
+                // Do something based on error
+                console.log(err);
+                setApiCalled(false);
+            });
     };
 
     return (
@@ -38,8 +55,13 @@ export default function CreateRoom() {
             }}
         >
             <Typography variant="h3">Create room</Typography>
-            <Button variant="outlined" onClick={handleCreate}>
-                create new room
+            <Button
+                variant="outlined"
+                onClick={handleCreate}
+                disabled={apiCalled}
+                sx={{ mt: 2 }}
+            >
+                create
             </Button>
         </Box>
     );

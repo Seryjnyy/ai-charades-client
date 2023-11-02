@@ -24,8 +24,8 @@ export default function JoinRoom() {
                 value={joinRoomID}
                 onChange={(e) => setJoinRoomID(e.target.value)}
             />
-            <Button variant="outlined" onClick={handleJoinRoom}>
-                join room
+            <Button variant="outlined" onClick={handleJoinRoom} sx={{ mt: 2 }}>
+                join
             </Button>
         </Box>
     );

@@ -1,4 +1,11 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {
+    BrowserRouter,
+    Route,
+    RouterProvider,
+    Routes,
+    createBrowserRouter,
+    createRoutesFromElements,
+} from "react-router-dom";
 import Dashboard from "./Dashboard/Dashboard";
 import GameRoom from "./Game/GameRoom";
 import { UserAuthContext } from "./Auth/UserAuthContext";
@@ -12,6 +19,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import About from "./About/About";
 
 function App() {
     let { mode } = useThemeMode();
@@ -42,37 +50,42 @@ function App() {
         },
     });
 
+    const router = createBrowserRouter(
+        createRoutesFromElements(
+            <Route path={"/"} element={<LandingPage />}>
+                <Route path={"/about"} element={<About />}></Route>
+                {/* <Route
+                    path={"/dashboard"}
+                    element={
+                        <RequireAuth redirectTo={"/"}>
+                            <Dashboard />
+                        </RequireAuth>
+                    }
+                ></Route>
+
+                <Route
+                    path={"/gameroom"}
+                    element={
+                        <RequireAuth redirectTo={"/"}>
+                            <GameRoom />
+                        </RequireAuth>
+                    }
+                ></Route> */}
+            </Route>
+        )
+    );
+
     return (
-        <UserAuthContext>
-            <BrowserRouter>
+        <>
+            <UserAuthContext>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
                     {/* <Container maxWidth={"lg"} sx={{ backgroundColor: "red" }}> */}
                     <NavBar />
-                    <Routes>
-                        <Route path={"/"} element={<LandingPage />}></Route>
-                        <Route
-                            path={"/dashboard"}
-                            element={
-                                <RequireAuth redirectTo={"/"}>
-                                    <Dashboard />
-                                </RequireAuth>
-                            }
-                        ></Route>
-
-                        <Route
-                            path={"/gameroom"}
-                            element={
-                                <RequireAuth redirectTo={"/"}>
-                                    <GameRoom />
-                                </RequireAuth>
-                            }
-                        ></Route>
-                    </Routes>
                     {/* </Container> */}
                 </ThemeProvider>
-            </BrowserRouter>
-        </UserAuthContext>
+            </UserAuthContext>
+        </>
     );
 }
 

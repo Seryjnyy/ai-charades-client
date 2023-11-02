@@ -3,7 +3,7 @@ import { createUserID } from "../utility/username";
 
 interface AuthContextType {
     user: User | undefined;
-    register: (uuid: string, username: string) => void;
+    register: (uuid: string, username: string, userAvatarSeed: string) => void;
     logout: () => void;
 }
 
@@ -15,6 +15,7 @@ interface User {
     id: string;
     username: string;
     userID: string;
+    userAvatarSeed: string;
 }
 
 export function UserAuthContext({ children }: any) {
@@ -45,13 +46,18 @@ export function UserAuthContext({ children }: any) {
         };
     }, []);
 
-    const register = (uuid: string, username: string) => {
+    const register = (
+        uuid: string,
+        username: string,
+        userAvatarSeed: string
+    ) => {
         localStorage.setItem(
             "user",
             JSON.stringify({
                 id: uuid,
                 username: username,
                 userID: createUserID({ username: username, id: uuid }),
+                userAvatarSeed: userAvatarSeed,
             })
         );
         setUserFromLocalStorage();
