@@ -11,11 +11,13 @@ import Avatar, { genConfig } from "react-nice-avatar";
 export default function LoginAndPlay() {
     const [username, setUsername] = useState<string>("");
     const [usernameError, setUsernameError] = useState("");
-    const { user, register, logout } = useAuth();
+    const { user, register, logout, registerWithSecretKey } = useAuth();
     const [avatarSeed, setAvatarSeed] = useState(
         user != undefined ? user.userAvatarSeed : "" + Date()
     );
 
+    // TODO : for dev purposes
+    const [secretKey, setSecretKey] = useState("");
     let navigate = useNavigate();
     const config = genConfig(avatarSeed);
 
@@ -60,10 +62,16 @@ export default function LoginAndPlay() {
 
         if (!isUsernameValid()) return;
 
-        register(uuid(), username, avatarSeed);
+        // register(uuid(), username, avatarSeed);
+        registerWithSecretKey(uuid(), username, avatarSeed, secretKey).then(
+            (success) => {
+                if (success) {
+                    navigate("/dashboard");
+                }
+            }
+        );
         // I think its fine if its optimistic, if user doesn't set properly then we will
         // just get redirected back to this page
-        navigate("/dashboard");
     };
 
     const handleLogout = () => {
@@ -120,6 +128,14 @@ export default function LoginAndPlay() {
                         helperText={usernameError}
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                    />
+
+                    {/* TODO : only for dev purposes */}
+                    <TextField
+                        variant="outlined"
+                        label="secret pass"
+                        value={secretKey}
+                        onChange={(e) => setSecretKey(e.target.value)}
                     />
                 </Box>
 

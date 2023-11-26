@@ -4,6 +4,12 @@ import { createUserID } from "../utility/username";
 interface AuthContextType {
     user: User | undefined;
     register: (uuid: string, username: string, userAvatarSeed: string) => void;
+    registerWithSecretKey: (
+        uuid: string,
+        username: string,
+        userAvatarSeed: string,
+        secretKey: string
+    ) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -16,6 +22,7 @@ interface User {
     username: string;
     userID: string;
     userAvatarSeed: string;
+    accessKey: string;
 }
 
 export function UserAuthContext({ children }: any) {
@@ -58,9 +65,53 @@ export function UserAuthContext({ children }: any) {
                 username: username,
                 userID: createUserID({ username: username, id: uuid }),
                 userAvatarSeed: userAvatarSeed,
+                authToken: "pass",
             })
         );
         setUserFromLocalStorage();
+    };
+
+    const registerWithSecretKey = async (
+        uuid: string,
+        username: string,
+        userAvatarSeed: string,
+        secretKey: string
+    ) => {
+        // call api
+        let success = false;
+
+        await fetch("https://localhost:3000/api/register", {
+            method: "POST",
+            body: JSON.stringify({ accessKey: secretKey }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then((result) => {
+            if (!result.ok) {
+                // TODO : better error handling
+                console.log("ERROR, can't register incorrect secret");
+                return;
+            }
+
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    id: uuid,
+                    username: username,
+                    userID: createUserID({ username: username, id: uuid }),
+                    userAvatarSeed: userAvatarSeed,
+                    accessKey: secretKey,
+                })
+            );
+
+            success = true;
+        });
+
+        if (success) {
+            setUserFromLocalStorage();
+        }
+
+        return success;
     };
 
     const logout = () => {
@@ -69,7 +120,9 @@ export function UserAuthContext({ children }: any) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, register, logout }}>
+        <AuthContext.Provider
+            value={{ user, register, logout, registerWithSecretKey }}
+        >
             {children}
         </AuthContext.Provider>
     );

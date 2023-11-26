@@ -19,9 +19,10 @@ export default function CreateRoom() {
 
         setApiCalled(true);
 
-        fetch("http://localhost:3000/api/rooms/create", {
+        fetch("https://localhost:3000/api/rooms/create", {
             headers: {
                 "Content-Type": "application/json",
+                Authorization: user.accessKey,
             },
             method: "POST",
             body: JSON.stringify({
@@ -42,6 +43,7 @@ export default function CreateRoom() {
             .catch((err) => {
                 // Do something based on error
                 console.log(err);
+                console.log("ERFSDFSDFD");
                 setApiCalled(false);
             });
     };

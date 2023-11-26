@@ -10,177 +10,126 @@ import { Result } from "../GameRoom";
 import Avatar, { genConfig } from "react-nice-avatar";
 import ComputerIcon from "@mui/icons-material/Computer";
 import { useNavigate } from "react-router-dom";
+import { ResultDisplayAnimated } from "./ResultDisplayAnimated";
+import { useAnimation } from "framer-motion";
+import { useEffect } from "react";
+import { useAuth } from "../../Auth/UserAuthContext";
 
 interface ResultsProps {
     results: Result[] | undefined;
+    resultPlace: number;
+    handleNext: () => void;
+    nextResultPermissionSetting: string;
+    host: string;
 }
 
-export default function Results({ results }: ResultsProps) {
+// TODO : still has issue warning:  Internal React error: Expected static flag was missing.
+// something with hooks apparently
+// only present on chrome non incognito browser, unsure why its like that
+// not causing issues that can be seen so fine for now
+// actually causing issue with game state in gameroom, it becomes undefined when going into results
+// for some reason
+export default function Results({
+    results,
+    resultPlace,
+    handleNext,
+    nextResultPermissionSetting,
+    host,
+}: ResultsProps) {
     if (results == undefined) {
         return <div>Results : Something went wrong :/</div>;
     }
 
+    const { user } = useAuth();
+
+    const authorPermission = (author: string) => {
+        if (user?.userID == author) {
+            return true;
+        }
+
+        return false;
+    };
+
+    const hostPermission = (_: string) => {
+        if (user?.userID == host) {
+            return true;
+        }
+
+        return false;
+    };
+
+    const hasNextPermission =
+        nextResultPermissionSetting == "host"
+            ? hostPermission
+            : authorPermission;
+
     const navigate = useNavigate();
+
+    const controls = useAnimation();
+
+    // useEffect(() => {
+    //     controls.set("hidden");
+    //     controls.start("visible");
+    // }, []);
+
+    useEffect(() => {
+        // Restarts animation for all clients this way, as opposed to having it in handleNext func
+        controls.set("hidden");
+        controls.start("visible");
+        console.log("resultPlace");
+    }, [resultPlace]);
+
+    const handleNextAndAnim = () => {
+        handleNext();
+    };
 
     return (
         <Box sx={{ mx: "auto", maxWidth: 400 }}>
             <Typography variant="h2">Results</Typography>
-            {results.map((result, index) => {
-                console.log(result.prompter);
-                const prompterAvatarSeed = genConfig(
-                    result.prompter.userAvatarSeed
-                );
+            {results
+                .slice(0, resultPlace + 1)
+                .reverse()
+                .map((result, index) => {
+                    if (index > resultPlace) {
+                        return;
+                    }
+                    return (
+                        <div key={"result" + index}>
+                            <ResultDisplayAnimated
+                                controls={controls}
+                                result={result}
+                                index={resultPlace - index}
+                                resultsLength={results.length}
+                                animated={index == 0}
+                            />
 
-                console.log(result.guesser);
-                const guesserAvatarSeed = genConfig(
-                    result.guesser.userAvatarSeed
-                );
-
-                return (
-                    <Paper
-                        key={"result" + index}
-                        sx={{ display: "flex", flexDirection: "column", mb: 3 }}
-                    >
-                        <Box sx={{ mx: 2 }}>
-                            <Typography
-                                align="center"
-                                color={"grey"}
-                                sx={{ fontSize: 12 }}
-                            >
-                                {index + 1}/{results.length}
-                            </Typography>
-                            <Typography sx={{ py: 0.4 }} align="center">
-                                {result.topic}
-                            </Typography>
-                        </Box>
-                        <Divider />
-
-                        <Box sx={{ mt: 2, mb: 2 }}>
-                            <Box
-                                sx={{
-                                    ml: "auto",
-                                    mr: 1,
-                                    mb: 3,
-                                    width: "fit-content",
-                                }}
-                            >
+                            {index == 0 ? (
                                 <Box
                                     sx={{
                                         display: "flex",
-                                        alignItems: "center",
-                                        width: "fit-content",
-                                        ml: "auto",
+                                        justifyContent: "center",
                                     }}
                                 >
-                                    <Typography color={"grey"} sx={{ mr: 0.8 }}>
-                                        {result.prompter.username}
-                                    </Typography>
-                                    <Avatar
-                                        style={{
-                                            width: "1.8rem",
-                                            height: "1.8rem",
-                                        }}
-                                        {...prompterAvatarSeed}
-                                    />
+                                    {resultPlace < results.length - 1 &&
+                                    hasNextPermission(
+                                        result.prompter.userID
+                                    ) ? (
+                                        <Button
+                                            onClick={handleNextAndAnim}
+                                            sx={{ mb: 4 }}
+                                        >
+                                            next
+                                        </Button>
+                                    ) : (
+                                        ""
+                                    )}
                                 </Box>
-                                <Paper
-                                    sx={{
-                                        width: "fit-content",
-                                        p: 1.3,
-                                        mr: 1.5,
-                                        ml: "auto",
-                                        mt: 1,
-                                        borderRadius: 3,
-                                    }}
-                                    elevation={6}
-                                >
-                                    <Typography sx={{ fontSize: 14 }}>
-                                        {result.prompt}
-                                    </Typography>
-                                </Paper>
-                            </Box>
-
-                            <Box sx={{ mr: "auto", ml: 1, mb: 3 }}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        width: "fit-content",
-                                        mr: "auto",
-                                    }}
-                                >
-                                    {/* <Avatar
-                                    style={{ width: "1.8rem", height: "1.8rem" }}
-                                    {...config}
-                                /> */}
-                                    <AvatarMUI
-                                        sx={{
-                                            maxWidth: "1.8rem",
-                                            maxHeight: "1.8rem",
-                                            backgroundColor: "lightblue",
-                                        }}
-                                    >
-                                        <ComputerIcon fontSize="small" />
-                                    </AvatarMUI>
-                                    <Typography color={"grey"} sx={{ ml: 0.8 }}>
-                                        AI
-                                    </Typography>
-                                </Box>
-                                <Paper
-                                    sx={{
-                                        width: "fit-content",
-                                        p: 1.3,
-                                        ml: 1.5,
-                                        mr: 1,
-                                        mt: 1,
-                                        borderRadius: 3,
-                                    }}
-                                    elevation={6}
-                                >
-                                    <img src={result.imageURI} />
-                                </Paper>
-                            </Box>
-
-                            <Box sx={{ mr: "auto", ml: 1, mb: 2 }}>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        width: "fit-content",
-                                        mr: "auto",
-                                    }}
-                                >
-                                    <Avatar
-                                        style={{
-                                            width: "1.8rem",
-                                            height: "1.8rem",
-                                        }}
-                                        {...guesserAvatarSeed}
-                                    />
-                                    <Typography color={"grey"} sx={{ ml: 0.8 }}>
-                                        {result.guesser.username}
-                                    </Typography>
-                                </Box>
-                                <Paper
-                                    sx={{
-                                        width: "fit-content",
-                                        p: 1.3,
-                                        ml: 1.5,
-                                        mr: 1,
-                                        mt: 1,
-                                        borderRadius: 3,
-                                    }}
-                                    elevation={6}
-                                >
-                                    <Typography sx={{ fontSize: 14 }}>
-                                        Is that {result.guess}?
-                                    </Typography>
-                                </Paper>
-                            </Box>
-                        </Box>
-                    </Paper>
-                );
-            })}
+                            ) : (
+                                ""
+                            )}
+                        </div>
+                    );
+                })}
             <Button onClick={() => navigate("/dashboard")}>Leave</Button>
         </Box>
     );

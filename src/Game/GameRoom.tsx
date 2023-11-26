@@ -25,11 +25,13 @@ import crownLogo from "../assets/crown.svg";
 import Guessing from "./Gameplay/Guessing";
 import Prompting from "./Gameplay/Prompting";
 import Results from "./Result/Results";
+import Settings from "./Settings";
 
 interface RoomSettings {
-    maxPlayer: number;
-    gameType?: string;
+    maxPlayer: number; // automatic 2 when room is created
     selectedTopics: string[];
+    nextResultPermission: string;
+    roundCount: number;
 }
 
 export interface OurState {
@@ -65,6 +67,11 @@ export interface ResultUser {
     userAvatarSeed: string;
 }
 
+interface Results {
+    results: Result[];
+    resultPlace: number;
+}
+
 export interface Result {
     topic: string;
     prompt: string;
@@ -98,6 +105,7 @@ export default function GameRoom() {
     const [socket, setSocket] = useState<Socket>();
     const [gameState, setGameState] = useState<GameState>();
     const [results, setResults] = useState<Result[]>();
+    const [resultPlace, setResultPlace] = useState(0);
     const [snackbarOpen, setSnackbarOpen] = useState<{
         open: boolean;
         severity: AlertColor;
@@ -154,11 +162,12 @@ export default function GameRoom() {
 
         console.log("connecting to ws");
 
-        const _socket = io("ws://localhost:3000", {
+        const _socket = io("wss://localhost:3000", {
             query: {
                 userID: user.userID,
                 groupID: roomID,
                 userAvatarSeed: user.userAvatarSeed,
+                accessKey: user.accessKey,
             },
         });
 
@@ -199,9 +208,14 @@ export default function GameRoom() {
         _socket.on("results", (data) => {
             console.log(data);
             setResults(data.results);
+            setResultPlace(data.resultPlace);
 
-            console.log("DISCONNECTING FROM SOCKET");
-            _socket.disconnect();
+            // console.log("DISCONNECTING FROM SOCKET");
+            // _socket.disconnect();
+        });
+
+        _socket.on("results:next", (data) => {
+            setResultPlace(data.resultPlace);
         });
 
         _socket.on("room:warning", (message) => {
@@ -221,17 +235,17 @@ export default function GameRoom() {
 
         _socket.on("disconnect", () => {
             console.log("We got disconnected");
+            // No snackbar in results, so don't have to worry about setting snackbar
             setSnackbarOpen({
                 open: true,
                 message: "We got disconnected!",
                 severity: "error",
             });
 
-            // TODO : Uncomment this!!!!
-            // setError({
-            //     error: true,
-            //     message: "Can't continue we got disconnected",
-            // });
+            setError({
+                error: true,
+                message: "Can't continue we got disconnected",
+            });
         });
 
         // Socket io event
@@ -324,6 +338,39 @@ export default function GameRoom() {
         onSuccess();
     };
 
+    const handleNextResultSetting = (setting: string) => {
+        if (socket == undefined) {
+            return;
+        }
+
+        if (setting != "host" && setting != "author") {
+            return;
+        }
+
+        socket.emit("room:nextResultPermission", setting);
+    };
+
+    const handleChangeRoundCount = (count: number) => {
+        if (socket == undefined) {
+            return;
+        }
+
+        if (!(count % 2 == 0) || count > 12) {
+            return;
+        }
+
+        socket.emit("room:changeRoundCount", count);
+    };
+
+    const handleNextResult = () => {
+        if (socket == undefined) {
+            return;
+        }
+
+        // no ack cause server needs to let everyone know
+        socket.emit("results:next");
+    };
+
     const selectTopic = (topic: string) => {
         let temp = selectedTopics.slice(0);
 
@@ -346,36 +393,36 @@ export default function GameRoom() {
         socket?.emit("room:remove_topic", topic);
     };
 
-    if (error.error || gameState?.gameState.round == "ERROR:A_PLAYER_LEFT") {
-        let errorMessage = "";
+    // if (error.error || gameState?.gameState.round == "ERROR:A_PLAYER_LEFT") {
+    //     let errorMessage = "";
 
-        if (error.error) {
-            errorMessage = error.message;
-        } else if (gameState?.gameState.round == "ERROR:A_PLAYER_LEFT") {
-            errorMessage =
-                "Sorry can't continue, the other player has left the game.";
-        }
+    //     if (error.error) {
+    //         errorMessage = error.message;
+    //     } else if (gameState?.gameState.round == "ERROR:A_PLAYER_LEFT") {
+    //         errorMessage =
+    //             "Sorry can't continue, the other player has left the game.";
+    //     }
 
-        return (
-            <Box sx={{ mx: "auto", maxWidth: 400, mt: 2 }}>
-                <Paper sx={{ p: 2 }}>
-                    <Typography variant="h4" color={theme.palette.error.main}>
-                        ERROR
-                    </Typography>
-                    <Typography sx={{ mt: 2 }}>{errorMessage}</Typography>
-                    <Button
-                        variant="outlined"
-                        sx={{ mt: 2 }}
-                        onClick={() =>
-                            navigate("/dashboard", { replace: true })
-                        }
-                    >
-                        Leave
-                    </Button>
-                </Paper>
-            </Box>
-        );
-    }
+    //     return (
+    //         <Box sx={{ mx: "auto", maxWidth: 400, mt: 2 }}>
+    //             <Paper sx={{ p: 2 }}>
+    //                 <Typography variant="h4" color={theme.palette.error.main}>
+    //                     ERROR
+    //                 </Typography>
+    //                 <Typography sx={{ mt: 2 }}>{errorMessage}</Typography>
+    //                 <Button
+    //                     variant="outlined"
+    //                     sx={{ mt: 2 }}
+    //                     onClick={() =>
+    //                         navigate("/dashboard", { replace: true })
+    //                     }
+    //                 >
+    //                     Leave
+    //                 </Button>
+    //             </Paper>
+    //         </Box>
+    //     );
+    // }
 
     if (!connected) {
         return <Box sx={{ mx: "auto", maxWidth: 350 }}>Connecting...</Box>;
@@ -582,6 +629,40 @@ export default function GameRoom() {
                         </Accordion>
                     </Box>
 
+                    <Box sx={{ mb: 4 }}>
+                        <Box sx={{ mb: 2 }}>
+                            <Box sx={{ ml: 2 }}>
+                                <Typography variant="h3">Settings</Typography>
+                            </Box>
+                        </Box>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>settings</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Settings
+                                    nextResultPermission={
+                                        roomState?.settings
+                                            .nextResultPermission || "host"
+                                    }
+                                    handleChangeSetting={
+                                        handleNextResultSetting
+                                    }
+                                    roundCount={
+                                        roomState?.settings.roundCount || 2
+                                    }
+                                    handleChangeRoundCount={
+                                        handleChangeRoundCount
+                                    }
+                                />
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+
                     <Box
                         sx={{
                             pb: 2,
@@ -677,8 +758,18 @@ export default function GameRoom() {
     }
 
     if (gameState.gameState.round == "RESULTS") {
-        return <Results results={results} />;
+        return (
+            <Results
+                results={results}
+                resultPlace={resultPlace}
+                nextResultPermissionSetting={
+                    roomState?.settings.nextResultPermission || "host"
+                }
+                host={roomState!.creator}
+                handleNext={handleNextResult}
+            />
+        );
     }
 
-    return <div>Something is wrong :/</div>;
+    return <div>Something is really wrong :/</div>;
 }
