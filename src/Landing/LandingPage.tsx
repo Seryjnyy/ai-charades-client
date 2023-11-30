@@ -15,9 +15,9 @@ export default function LandingPage() {
         // Work around for when page is refreshed and user is lost.
         // The user is sent here before we have chance to load in user again.
         // Therefore, if user not null and we got redirected from somewhere, then get back there son.
-        if (user != null && (redirectPath != "/" || redirectPath != "/")) {
-            navigate(redirectPath);
-        }
+        // if (user != null && (redirectPath != "/" || redirectPath != "/")) {
+        //     navigate(redirectPath);
+        // }
     }, [user]);
 
     return (

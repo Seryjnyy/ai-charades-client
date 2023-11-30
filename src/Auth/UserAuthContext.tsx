@@ -26,9 +26,17 @@ interface User {
 }
 
 export function UserAuthContext({ children }: any) {
-    const [user, setUser] = useState<User>();
+    const getUser = () => {
+        let userFound = localStorage.getItem("user");
 
-    const setUserFromLocalStorage = () => {
+        if (userFound == null) return undefined;
+
+        return JSON.parse(userFound);
+    };
+
+    const [user, setUser] = useState<User | undefined>(getUser());
+
+    const setUserFromLocalStorage = async () => {
         let userFound = localStorage.getItem("user");
         if (userFound == null) {
             console.log(
@@ -40,17 +48,15 @@ export function UserAuthContext({ children }: any) {
     };
 
     useEffect(() => {
-        setUserFromLocalStorage();
-
+        // setUserFromLocalStorage();
         // TODO : unsure if this does what it should
-        const unsubscribe = () => {
-            setUserFromLocalStorage();
-        };
-
+        // const unsubscribe = () => {
+        //     setUserFromLocalStorage();
+        // };
         // return a function that will call unsubscribe
-        return () => {
-            unsubscribe();
-        };
+        // return () => {
+        //     unsubscribe();
+        // };
     }, []);
 
     const register = (

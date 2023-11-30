@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 export default function CreateRoom() {
-    const [apiCalled, setApiCalled] = useState(false);
+    const [loading, setLoading] = useState(false);
     const { user } = useAuth();
 
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function CreateRoom() {
             return;
         }
 
-        setApiCalled(true);
+        setLoading(true);
 
         fetch("https://localhost:3000/api/rooms/create", {
             headers: {
@@ -30,6 +30,8 @@ export default function CreateRoom() {
             }),
         })
             .then((res) => {
+                setLoading(false);
+
                 if (!res.ok) {
                     throw new Error("Failed to create room.");
                 }
@@ -44,7 +46,7 @@ export default function CreateRoom() {
                 // Do something based on error
                 console.log(err);
                 console.log("ERFSDFSDFD");
-                setApiCalled(false);
+                setLoading(false);
             });
     };
 
@@ -60,7 +62,7 @@ export default function CreateRoom() {
             <Button
                 variant="outlined"
                 onClick={handleCreate}
-                disabled={apiCalled}
+                disabled={loading}
                 sx={{ mt: 2 }}
             >
                 create

@@ -10,6 +10,7 @@ import {
     RouterProvider,
     createBrowserRouter,
     createRoutesFromElements,
+    useRouteError,
 } from "react-router-dom";
 import About from "./About/About";
 import RequireAuth from "./Auth/RequireAuth";
@@ -17,10 +18,33 @@ import Dashboard from "./Dashboard/Dashboard";
 import GameRoom from "./Game/GameRoom";
 import LandingPage from "./Landing/LandingPage";
 import RootLayout from "./Layouts/RootLayout";
+import GameRoom2 from "./Game/Game2/GameRoom2";
+
+function ErrorBoundary() {
+    let error = useRouteError();
+
+    // TODO : implement
+    return (
+        <div>
+            <div>Dang!</div>
+
+            <div> Go Back!</div>
+        </div>
+    );
+}
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path={"/"} element={<RootLayout />}>
+            <Route
+                path={"/gameroom"}
+                element={
+                    <RequireAuth redirectTo={"/"}>
+                        <GameRoom2 />
+                    </RequireAuth>
+                }
+                // errorElement={<ErrorBoundary />}
+            ></Route>
             <Route index path={"/"} element={<LandingPage />}></Route>
             <Route path={"/about"} element={<About />}></Route>
             <Route
@@ -28,15 +52,6 @@ const router = createBrowserRouter(
                 element={
                     <RequireAuth redirectTo={"/"}>
                         <Dashboard />
-                    </RequireAuth>
-                }
-            ></Route>
-
-            <Route
-                path={"/gameroom"}
-                element={
-                    <RequireAuth redirectTo={"/"}>
-                        <GameRoom />
                     </RequireAuth>
                 }
             ></Route>
