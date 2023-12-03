@@ -1,6 +1,7 @@
 import {
     AppBar,
     Box,
+    Button,
     Container,
     Divider,
     IconButton,
@@ -17,17 +18,51 @@ import { useState } from "react";
 import { useAuth } from "./Auth/UserAuthContext";
 import Avatar, { genConfig } from "react-nice-avatar";
 
+const AvatarOrLogin = () => {
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    if (!user) {
+        return (
+            <MenuItem onClick={() => navigate("/")}>
+                <Typography textAlign="center">Sign in</Typography>
+            </MenuItem>
+        );
+    }
+
+    const config = genConfig(user.userAvatarSeed);
+
+    if (user) {
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    pb: 1,
+                }}
+            >
+                <>
+                    <Box sx={{ ml: 1, mr: 1 }}>
+                        <Avatar
+                            style={{
+                                width: "2rem",
+                                height: "2rem",
+                            }}
+                            {...config}
+                        />
+                    </Box>
+                    <Box sx={{ maxWidth: 90 }}>
+                        <Typography noWrap>{user && user.username}</Typography>
+                    </Box>
+                </>
+            </Box>
+        );
+    }
+};
+
 export default function NavBar() {
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
-
-    const { user } = useAuth();
-
-    const config = genConfig(user?.userAvatarSeed);
-
-    const navigateTo = (destination: string) => {
-        navigate("/" + destination);
-    };
 
     const settings = ["Home", "Dashboard", "About"];
 
@@ -91,26 +126,7 @@ export default function NavBar() {
                         open={Boolean(anchorElUser)}
                         onClose={handleCloseUserMenu}
                     >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                pb: 1,
-                            }}
-                        >
-                            <Box sx={{ ml: 0.5, mr: 1 }}>
-                                <Avatar
-                                    style={{ width: "2rem", height: "2rem" }}
-                                    {...config}
-                                />
-                            </Box>
-                            <Box sx={{ maxWidth: 90 }}>
-                                <Typography noWrap>
-                                    {user && user.username}
-                                </Typography>
-                            </Box>
-                        </Box>
-
+                        <AvatarOrLogin />
                         <Divider />
 
                         {settings.map((setting) => (

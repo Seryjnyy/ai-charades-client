@@ -31,15 +31,17 @@ export const createSocketStore = (initProps: SocketProps) => {
                     userAvatarSeed: initProps.userAvatarSeed,
                     accessKey: initProps.accessKey,
                 },
-            });
-
-            _socket.on("connect", () => {
+            }).on("connect", () => {
                 console.log("entered the room");
             });
 
-            _socket.on("disconnect", () => {
-                console.log("disconnected");
-            });
+            // _socket.on("connect", () => {
+            //     console.log("entered the room");
+            // });
+
+            // _socket.on("disconnect", () => {
+            //     console.log("disconnected");
+            // });
             console.log("should");
 
             return {

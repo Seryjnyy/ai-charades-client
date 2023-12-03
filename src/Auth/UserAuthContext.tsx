@@ -95,7 +95,7 @@ export function UserAuthContext({ children }: any) {
         }).then((result) => {
             if (!result.ok) {
                 // TODO : better error handling
-                console.log("ERROR, can't register incorrect secret");
+                console.log("ERROR, can't register invalid secret");
                 return;
             }
 

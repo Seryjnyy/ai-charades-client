@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useAuth } from "../Auth/UserAuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -19,35 +19,37 @@ export default function CreateRoom() {
 
         setLoading(true);
 
-        fetch("https://localhost:3000/api/rooms/create", {
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: user.accessKey,
-            },
-            method: "POST",
-            body: JSON.stringify({
-                userID: user.userID,
-            }),
-        })
-            .then((res) => {
-                setLoading(false);
-
-                if (!res.ok) {
-                    throw new Error("Failed to create room.");
-                }
-
-                return res.json();
+        setTimeout(() => {
+            fetch("https://localhost:3000/api/rooms/create", {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: user.accessKey,
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    userID: user.userID,
+                }),
             })
-            .then((data) => {
-                console.log(data);
-                navigate("/gameroom", { state: { roomID: data.roomID } });
-            })
-            .catch((err) => {
-                // Do something based on error
-                console.log(err);
-                console.log("ERFSDFSDFD");
-                setLoading(false);
-            });
+                .then((res) => {
+                    setLoading(false);
+
+                    if (!res.ok) {
+                        throw new Error("Failed to create room.");
+                    }
+
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log(data);
+                    navigate("/gameroom", { state: { roomID: data.roomID } });
+                })
+                .catch((err) => {
+                    // Do something based on error
+                    console.log(err);
+                    console.log("ERFSDFSDFD");
+                    setLoading(false);
+                });
+        }, 3000);
     };
 
     return (
@@ -59,14 +61,29 @@ export default function CreateRoom() {
             }}
         >
             <Typography variant="h3">Create room</Typography>
-            <Button
-                variant="outlined"
-                onClick={handleCreate}
-                disabled={loading}
-                sx={{ mt: 2 }}
-            >
-                create
-            </Button>
+            <Box sx={{ position: "relative" }}>
+                <Button
+                    variant="outlined"
+                    onClick={handleCreate}
+                    disabled={loading}
+                    sx={{ mt: 2 }}
+                >
+                    create
+                </Button>
+                {loading && (
+                    <CircularProgress
+                        size={24}
+                        sx={{
+                            //   color: green[500],
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            marginTop: "-6px",
+                            marginLeft: "-12px",
+                        }}
+                    />
+                )}
+            </Box>
         </Box>
     );
 }
