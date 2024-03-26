@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { Socket, io } from "socket.io-client";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
+import { SERVER_SOCKET_URL } from "../utility/server";
 
 export interface SocketProps {
     userID: string;
@@ -24,7 +25,7 @@ export const createSocketStore = (initProps: SocketProps) => {
         combine<InitialState, SetState>({ bears: 0 }, (set) => {
             console.log("on creation of store");
 
-            const _socket: Socket = io("wss://localhost:3000", {
+            const _socket: Socket = io(SERVER_SOCKET_URL, {
                 query: {
                     userID: initProps.userID,
                     groupID: initProps.roomID,

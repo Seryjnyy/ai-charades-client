@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { Socket, io } from "socket.io-client";
+import { SERVER_SOCKET_URL } from "../utility/server";
 
 const WebSocketContext = createContext<ISocketContext>({} as ISocketContext);
 
@@ -106,7 +107,7 @@ export default function SocketContext({
 
   useEffect(() => {
     console.log("connection");
-    const _socket: Socket = io("wss://localhost:3000", {
+    const _socket: Socket = io(SERVER_SOCKET_URL, {
       query: {
         userID: userID,
         roomID: roomID,

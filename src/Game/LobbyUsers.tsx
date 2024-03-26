@@ -1,9 +1,9 @@
 import { Box, Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Avatar, { genConfig } from "react-nice-avatar";
-import { useAuth } from "../../Auth/UserAuthContext";
+import { useAuth } from "../Auth/UserAuthContext";
 import { useWebSocket } from "./SocketContext";
-import crownLogo from "../../assets/crown.svg";
+import crownLogo from "../assets/crown.svg";
 import PersonIcon from "@mui/icons-material/Person";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 

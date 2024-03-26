@@ -8,6 +8,7 @@ import {
 import { useAuth } from "../Auth/UserAuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { SERVER_URL } from "../utility/server";
 
 export default function CreateRoom() {
   const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ export default function CreateRoom() {
 
     // TODO : Remove artificial delays
     setTimeout(() => {
-      fetch("https://localhost:3000/api/rooms/create", {
+      fetch(SERVER_URL + "/api/rooms/create", {
         headers: {
           "Content-Type": "application/json",
           Authorization: user.accessKey,

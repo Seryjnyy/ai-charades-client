@@ -1,66 +1,64 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// import "./index.css";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import {
-    Route,
-    RouterProvider,
-    createBrowserRouter,
-    createRoutesFromElements,
-    useRouteError,
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+  useRouteError,
 } from "react-router-dom";
 import About from "./About/About";
 import RequireAuth from "./Auth/RequireAuth";
 import Dashboard from "./Dashboard/Dashboard";
-import GameRoom from "./Game/GameRoom";
 import LandingPage from "./Landing/LandingPage";
 import RootLayout from "./Layouts/RootLayout";
-import GameRoom2 from "./Game/Game2/GameRoom2";
+import GameRoom from "./Game/GameRoom";
 
 function ErrorBoundary() {
-    let error = useRouteError();
+  let error = useRouteError();
 
-    // TODO : implement
-    return (
-        <div>
-            <div>Dang!</div>
+  // TODO : implement
+  return (
+    <div>
+      <div>Dang!</div>
 
-            <div> Go Back!</div>
-        </div>
-    );
+      <div> Go Back!</div>
+    </div>
+  );
 }
 
 const router = createBrowserRouter(
-    createRoutesFromElements(
-        <Route path={"/"} element={<RootLayout />}>
-            <Route
-                path={"/gameroom"}
-                element={
-                    <RequireAuth redirectTo={"/"}>
-                        <GameRoom2 />
-                    </RequireAuth>
-                }
-                // errorElement={<ErrorBoundary />}
-            ></Route>
-            <Route index path={"/"} element={<LandingPage />}></Route>
-            <Route path={"/about"} element={<About />}></Route>
-            <Route
-                path={"/dashboard"}
-                element={
-                    <RequireAuth redirectTo={"/"}>
-                        <Dashboard />
-                    </RequireAuth>
-                }
-            ></Route>
-        </Route>
-    )
+  createRoutesFromElements(
+    <Route path={"/"} element={<RootLayout />}>
+      <Route
+        path={"/gameroom"}
+        element={
+          <RequireAuth redirectTo={"/"}>
+            <GameRoom />
+          </RequireAuth>
+        }
+        // errorElement={<ErrorBoundary />}
+      ></Route>
+      <Route index path={"/"} element={<LandingPage />}></Route>
+      <Route path={"/about"} element={<About />}></Route>
+      <Route
+        path={"/dashboard"}
+        element={
+          <RequireAuth redirectTo={"/"}>
+            <Dashboard />
+          </RequireAuth>
+        }
+      ></Route>
+    </Route>
+  )
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-        <RouterProvider router={router} />
-    </React.StrictMode>
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
 );

@@ -1,8 +1,9 @@
 import { useLocation } from "react-router-dom";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
-import { useAuth } from "../../Auth/UserAuthContext";
+import { useAuth } from "../Auth/UserAuthContext";
 import { Socket, io } from "socket.io-client";
+import { SERVER_SOCKET_URL } from "../utility/server";
 
 // interface InitialState {
 //     socketState : "CONNECTED" | "DISCONNECTED"
@@ -21,7 +22,7 @@ const useStore = create(
         const { user } = useAuth();
 
         if (user) {
-            const _socket: Socket = io("wss://localhost:3000", {
+            const _socket: Socket = io(SERVER_SOCKET_URL, {
                 query: {
                     userID: user.userID,
                     groupID: roomID,

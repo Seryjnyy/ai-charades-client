@@ -6,11 +6,11 @@ import {
   AccordionSummary,
   Box,
   Chip,
-  Paper,
+  TextField,
   Typography,
 } from "@mui/material";
+import { useAuth } from "../Auth/UserAuthContext";
 import { AIModel, useWebSocket } from "./SocketContext";
-import { useAuth } from "../../Auth/UserAuthContext";
 
 const ResultControl = () => {
   const { roomstate, changeResultControlSetting } = useWebSocket();
@@ -65,7 +65,7 @@ const RoundCount = () => {
   }
 
   const handleRoundCountChange = (roundCount: number) => {
-    if (roomstate.settings.roundCount == roundCount) return;
+    if (roomstate.settings.roundCount == roundCount || roundCount <= 0) return;
 
     changeRoundCountSetting(roundCount);
   };
@@ -92,6 +92,22 @@ const RoundCount = () => {
           />
         ))}
       </Box>
+      <TextField
+        id="standard-number"
+        sx={{ maxWidth: 80, my: 2 }}
+        value={roomstate.settings.roundCount}
+        label="Admin custom"
+        type="number"
+        InputLabelProps={{
+          shrink: true,
+        }}
+        variant="outlined"
+        onChange={(e) =>
+          handleRoundCountChange(
+            isNaN(Number(e.target.value)) ? 0 : Number(e.target.value)
+          )
+        }
+      />
     </Box>
   );
 };

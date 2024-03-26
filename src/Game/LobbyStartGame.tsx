@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../Auth/UserAuthContext";
+import { useAuth } from "../Auth/UserAuthContext";
 import { useWebSocket } from "./SocketContext";
 import { useEffect, useState } from "react";
 

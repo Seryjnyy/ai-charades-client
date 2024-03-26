@@ -65,7 +65,7 @@ function ResultDisplayAnimated({
               {index + 1}/{resultsLength}
             </Typography>
             <Typography sx={{ py: 0.4 }} align="center">
-              {result.topic}
+              {/* {result.topic} */}
             </Typography>
           </Box>
           <Divider />
