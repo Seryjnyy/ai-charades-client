@@ -1,6 +1,6 @@
 import { unstable_useBlocker as useBlocker } from "react-router-dom";
 
-function Prompt(props) {
+function Prompt(props: any) {
   const block = props.when;
 
   useBlocker(() => {

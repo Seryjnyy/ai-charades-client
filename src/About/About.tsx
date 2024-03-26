@@ -1,5 +1,4 @@
-import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import buymeacoffee from "../assets/buymeacoffee.svg";
+import { Box, Paper, Stack, Typography } from "@mui/material";
 
 export default function About() {
   return (

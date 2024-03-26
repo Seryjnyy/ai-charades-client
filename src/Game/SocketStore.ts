@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Socket, io } from "socket.io-client";
+import { io } from "socket.io-client";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { SERVER_SOCKET_URL } from "../utility/server";
@@ -23,9 +23,8 @@ export type SocketCombinedState = InitialState & SetState;
 export const createSocketStore = (initProps: SocketProps) => {
     return create(
         combine<InitialState, SetState>({ bears: 0 }, (set) => {
-            console.log("on creation of store");
-
-            const _socket: Socket = io(SERVER_SOCKET_URL, {
+            
+            io(SERVER_SOCKET_URL, {
                 query: {
                     userID: initProps.userID,
                     groupID: initProps.roomID,
@@ -35,15 +34,6 @@ export const createSocketStore = (initProps: SocketProps) => {
             }).on("connect", () => {
                 console.log("entered the room");
             });
-
-            // _socket.on("connect", () => {
-            //     console.log("entered the room");
-            // });
-
-            // _socket.on("disconnect", () => {
-            //     console.log("disconnected");
-            // });
-            console.log("should");
 
             return {
                 increase: (by) => set((state) => ({ bears: state.bears + by })),

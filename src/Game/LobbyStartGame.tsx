@@ -6,15 +6,13 @@ import {
   CircularProgress,
   Dialog,
   DialogActions,
-  DialogContent,
-  DialogContentText,
   DialogTitle,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Auth/UserAuthContext";
 import { useWebSocket } from "./SocketContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function LobbyStartGame({
   useSnackbar,

@@ -9,7 +9,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useWebSocket } from "./SocketContext";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "../Auth/UserAuthContext";
 

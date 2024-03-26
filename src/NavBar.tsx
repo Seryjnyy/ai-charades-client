@@ -1,19 +1,16 @@
 import {
   AppBar,
   Box,
-  Button,
   Container,
   Divider,
   IconButton,
   Menu,
   MenuItem,
-  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate } from "react-router-dom";
-import ThemeModeSelector from "./theme/ThemeModeSwitch";
 import { useState } from "react";
 import { useAuth } from "./Auth/UserAuthContext";
 import Avatar, { genConfig } from "react-nice-avatar";
@@ -66,7 +63,7 @@ export default function NavBar() {
 
   const settings = ["Home", "Play", "About"];
 
-  const handleOpenUserMenu = (event) => {
+  const handleOpenUserMenu = (event: any) => {
     setAnchorElUser(event.currentTarget);
   };
 
