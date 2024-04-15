@@ -18,6 +18,15 @@ export default function LandingPage() {
       <Paper sx={{ p: 4 }}>
         <LoginAndPlay />
       </Paper>
+
+      <Box sx={{ pt: 8 }}>
+        <Typography sx={{ textAlign: "center", opacity: "80%" }}>
+          {"Image generation is expensive, so it's limited access sorry."}
+        </Typography>
+        <Typography sx={{ textAlign: "center", opacity: "80%" }}>
+          If you do want to try it out then contact me.
+        </Typography>
+      </Box>
     </Box>
   );
 }
