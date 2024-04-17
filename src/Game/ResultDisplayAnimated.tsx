@@ -77,6 +77,7 @@ function ResultDisplayAnimated({
                   sx={{
                     ml: "auto",
                     mr: 1,
+                    pl: 1,
                     mb: 3,
                     width: "fit-content",
                   }}
@@ -195,6 +196,22 @@ function ResultDisplayAnimated({
                       Is that {result.guess}?
                     </Typography>
                   </Paper>
+                </Box>
+              </m.div>
+              <m.div variants={item}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    pt: 2,
+                    flexDirection: "column",
+                  }}
+                >
+                  <Typography sx={{ opacity: "80%", pr: 1 }}>
+                    Topic was
+                  </Typography>
+                  {result.topic}
                 </Box>
               </m.div>
             </Box>
