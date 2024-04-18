@@ -40,7 +40,7 @@ The game involves two rounds.
 - Second round is when you get the other players generated images and guess the topic.
 - Finally, you get the results to see how everyone got on.
 
-### Built with
+## Built with
 
 - React
 - Vite
